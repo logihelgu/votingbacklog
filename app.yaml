@@ -1,0 +1,14 @@
+application: votingbacklog
+version: 2
+runtime: python
+api_version: 1
+
+handlers:
+- url: /stylesheets
+  static_dir: stylesheets
+
+- url: /javascript
+  static_dir: javascript
+
+- url: /.*
+  script: main.py
