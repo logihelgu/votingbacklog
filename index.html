@@ -1,0 +1,81 @@
+<html>
+ <head>
+    <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+    <script type="text/javascript" src="/javascript/common.js"></script> 
+	<script>
+		function changeComplated()
+		{
+			var x=document.getElementsByClassName('completed');
+			for(var i in x)
+			{
+				var yFieldsetDisplayStyle = x.item(i).style.display;
+				if( yFieldsetDisplayStyle == 'block' ) {
+					x.item(i).style.display = 'none'; }
+				else {x.item(i).style.display = 'block';
+}			}
+
+		}
+	</script>
+  </head>
+  <body>
+
+   <fieldset style="background-color: white; border: 1px solid gray;">
+    <h2>Add new feature</h2>
+    <form action="/sign" method="post"><br>
+      <div><label>Name</label><input type="text" name="name" style="width:440px;" value="{{selected_feature.name}}" /> <input type="hidden" name="old_name" value="{{selected_feature.name}}" /></div><br>
+      <div><label>Description</label><textarea name="description" rows="3" cols="60">{{selected_feature.description}}</textarea></div><br>
+      <div><input class="button" type="submit" value="Post feature"></div><br>
+    </form>
+	<input type="checkbox" style="float: right;" onclick="changeComplated();"></input><span style="color: gray;font-size:0.5em;float:right;">show completed</span>
+   </fieldset>
+
+    {% for feature in features %}
+	<fieldset class="voteContainer{% if feature.done %} completed{% endif %}" onclick="toggle('{{ feature.key }}'+'_description');">
+      <h3 id="{{ feature.key }}" title="{{ feature.description|escape }}">{{ feature.name|escape }}</h3>
+
+<!-- Details about an item -->	
+<div id="{{ feature.key }}_description" style="display: none; ">{{ feature.description|escape }}
+
+<!-- Edit -->
+<form method="post"  action="/select"><input type="hidden" name="name" value="{{ feature.name }}">
+<input class="button" type="submit" value="Edit" style="opacity: 0.7;display:none;">
+<a href="#" onclick="parentNode.submit()" style="right: 100px; position: absolute;line-height: 38px;color:lightgray;">Edit</a>
+</form>
+
+<!-- Delete -->
+<form method="post" action="/delete"><input type="hidden" name="name" value="{{ feature.name }}">
+<a href="#" onclick="parentNode.submit()" style="right: 150px; position: absolute;line-height: 38px;color:lightgray;">Delete</a>
+</form>
+
+</div>
+
+<form action="/done" method="post">
+<INPUT TYPE=CHECKBOX {% if feature.done %}checked{% endif %} onchange="this.parentElement.submit();" style="float: right;" >
+	<input type="hidden" name="name" value="{{ feature.name }}">
+<!--<input class="button" type="submit" value="Finished">-->
+</form>
+
+
+<!-- keep this around if I want to show the author
+      {% if feature.author %}
+        {{ feature.author.nickname }}
+      {% else %}
+       Anonymous
+      {% endif %}
+-->
+      <form method="post" action="vote" class="">
+	<input type="hidden" name="name" value="{{ feature.name }}">
+	<input type="submit" onSubmit="/vote" value="+" class="voting">
+      </form>
+        <i class="votes">{{ feature.votes }}</i>
+      <form method="post" action="removeVote" class="">
+	<input type="hidden" name="name" value="{{ feature.name }}">
+	<input type="submit" onSubmit="/vote" value="-" class="voting">
+      </form>
+      </fieldset>
+    {% endfor %}
+
+    <a href="{{ url }}">{{ url_linktext }}</a>
+
+  </body>
+</html>
